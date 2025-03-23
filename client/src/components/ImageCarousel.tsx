@@ -170,6 +170,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, onUpdate, onDelet
               alert('Failed to save new order. Please try again.');
             }
           }}
+          disabled={JSON.stringify(images) === JSON.stringify(reorderedImages)}
           variant="contained"
           color="primary"
         >
