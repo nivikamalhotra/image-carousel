@@ -79,3 +79,6 @@ src/
 - Vite for build tooling
 - Tailwind CSS for styling
 - React Query for API integration
+
+### Additional info
+- Start the backend server first, then run the frontend for a better user interface experience.
