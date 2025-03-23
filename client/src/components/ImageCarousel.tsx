@@ -180,95 +180,106 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, onUpdate, onDelet
     </Dialog>
   );
 
+  // Modify the return statement
   return (
     <Box sx={{ width: '100%', textAlign: 'center', mt: 3 }}>
-      <Grid container spacing={3} justifyContent="center">
-        {/* Left Side: Image Carousel */}
-        <Grid item xs={12} md={8}>
-          <Box sx={{ position: 'relative', width: '100%', height: '500px', borderRadius: 3, overflow: 'hidden', boxShadow: 3 }}>
-            <Paper sx={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-              <img
-                src={images[currentIndex].imageUrl}
-                alt={images[currentIndex].title}
-                style={{
-                  width: '100%',
-                  height: '500px',
-                  objectFit: 'contain',
-                  borderRadius: 3,
-                  transition: 'opacity 0.5s ease, transform 0.3s ease',
-                }}
-              />
-            </Paper>
-
-            {/* Navigation Buttons */}
-            <IconButton
-              onClick={() => handleNavigation('previous')}
-              sx={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', bgcolor: 'rgba(255,255,255,0.8)' }}
-            >
-              <ChevronLeft />
-            </IconButton>
-            <IconButton
-              onClick={() => handleNavigation('next')}
-              sx={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', bgcolor: 'rgba(255,255,255,0.8)' }}
-            >
-              <ChevronRight />
-            </IconButton>
-          </Box>
-
-          {/* Image Title & Description */}
-          <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold', color: 'primary.main' }}>
-            {images[currentIndex].title}
+      {images.length === 0 ? (
+        <Paper sx={{ p: 4, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 2 }}>
+          <Typography variant="h6" color="text.secondary" gutterBottom>
+            No Images Available
           </Typography>
-          <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
-            {images[currentIndex].description}
+          <Typography variant="body1" color="text.secondary">
+            Please upload some images to start the slideshow.
           </Typography>
-        </Grid>
-
-        {/* Right Side: Auto-Play Interval Panel + Buttons */}
-        <Grid item xs={12} md={4}>
-          <Box sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 2, boxShadow: 3 }}>
-            <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
-              Auto-Play Interval (seconds)
-            </Typography>
-            <Slider
-              value={autoPlayInterval / 1000}
-              min={1}
-              max={10}
-              step={1}
-              marks={[
-                { value: 1, label: '1s' },
-                { value: 3, label: '3s' },
-                { value: 5, label: '5s' },
-                { value: 7, label: '7s' },
-                { value: 10, label: '10s' }
-              ]}
-              onChange={handleIntervalChange}
-              valueLabelDisplay="auto"
-            />
-
-            {/* Edit & Delete Buttons (Now Below Interval Panel) */}
-            <Stack direction="column" spacing={2} justifyContent="center" sx={{ mt: 3 }}>
-              <Button variant="contained" startIcon={<Edit />} onClick={() => handleEdit(images[currentIndex])}>
-                Edit
-              </Button>
-              <Button variant="outlined" color="error" startIcon={<Delete />} onClick={handleDeleteDialogOpen}>
-                Delete
-              </Button>
-              <Button 
-                variant="contained" 
-                startIcon={<Reorder />} 
-                onClick={() => setCarouselState((prev) => ({ ...prev, reorderDialogOpen: true }))}
+        </Paper>
+      ) : (
+        <Grid container spacing={3} justifyContent="center">
+          {/* Left Side: Image Carousel */}
+          <Grid item xs={12} md={8}>
+            <Box sx={{ position: 'relative', width: '100%', height: '500px', borderRadius: 3, overflow: 'hidden', boxShadow: 3 }}>
+              <Paper sx={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <img
+                  src={images[currentIndex].imageUrl}
+                  alt={images[currentIndex].title}
+                  style={{
+                    width: '100%',
+                    height: '500px',
+                    objectFit: 'contain',
+                    borderRadius: 3,
+                    transition: 'opacity 0.5s ease, transform 0.3s ease',
+                  }}
+                />
+              </Paper>
+  
+              {/* Navigation Buttons */}
+              <IconButton
+                onClick={() => handleNavigation('previous')}
+                sx={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', bgcolor: 'rgba(255,255,255,0.8)' }}
               >
-                Reorder Images
-              </Button>
-            </Stack>
-          </Box>
+                <ChevronLeft />
+              </IconButton>
+              <IconButton
+                onClick={() => handleNavigation('next')}
+                sx={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', bgcolor: 'rgba(255,255,255,0.8)' }}
+              >
+                <ChevronRight />
+              </IconButton>
+            </Box>
+  
+            {/* Image Title & Description */}
+            <Typography variant="h5" sx={{ mt: 2, fontWeight: 'bold', color: 'primary.main' }}>
+              {images[currentIndex].title}
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 2, color: 'text.secondary' }}>
+              {images[currentIndex].description}
+            </Typography>
+          </Grid>
+  
+          {/* Right Side: Auto-Play Interval Panel + Buttons */}
+          <Grid item xs={12} md={4}>
+            <Box sx={{ bgcolor: 'background.paper', p: 3, borderRadius: 2, boxShadow: 3 }}>
+              <Typography variant="subtitle1" gutterBottom sx={{ fontWeight: 'bold' }}>
+                Auto-Play Interval (seconds)
+              </Typography>
+              <Slider
+                value={autoPlayInterval / 1000}
+                min={1}
+                max={10}
+                step={1}
+                marks={[
+                  { value: 1, label: '1s' },
+                  { value: 3, label: '3s' },
+                  { value: 5, label: '5s' },
+                  { value: 7, label: '7s' },
+                  { value: 10, label: '10s' }
+                ]}
+                onChange={handleIntervalChange}
+                valueLabelDisplay="auto"
+              />
+  
+              {/* Edit & Delete Buttons (Now Below Interval Panel) */}
+              <Stack direction="column" spacing={2} justifyContent="center" sx={{ mt: 3 }}>
+                <Button variant="contained" startIcon={<Edit />} onClick={() => handleEdit(images[currentIndex])}>
+                  Edit
+                </Button>
+                <Button variant="outlined" color="error" startIcon={<Delete />} onClick={handleDeleteDialogOpen}>
+                  Delete
+                </Button>
+                <Button 
+                  variant="contained" 
+                  startIcon={<Reorder />} 
+                  onClick={() => setCarouselState((prev) => ({ ...prev, reorderDialogOpen: true }))}
+                >
+                  Reorder Images
+                </Button>
+              </Stack>
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
-
+      )}
       {/* Edit Dialog */}
       <EditImageDialog open={editDialogOpen} images={images} image={selectedImage} onClose={() => setCarouselState(prev => ({ ...prev, editDialogOpen: false }))} onSave={onUpdate} />
-
+  
       {/* Delete Dialog */}
       <DeleteImageDialog 
         open={deleteDialogOpen} 
@@ -276,7 +287,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images, onUpdate, onDelet
         onClose={handleDeleteDialogClose} 
         onDelete={handleDeleteImage} 
       />
-
+  
       {/* Reorder Dialog */}
       {renderReorderDialog()}
     </Box>
