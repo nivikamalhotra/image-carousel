@@ -158,3 +158,6 @@ npm run dev
    - Verify API URL in client/.env
    - Check proxy settings in vite.config.ts
    - Ensure both servers are running
+
+## Additional info
+   - For detailed frontend setup instructions, please refer to the README file in the client folder.
