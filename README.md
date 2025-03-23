@@ -1,20 +1,21 @@
 # Image Carousel Application
 
-A full-stack application featuring an interactive image carousel with upload capabilities and automatic rotation.
+A full-stack application featuring an interactive image carousel with upload capabilities, automatic rotation, and comprehensive image management features.
 
 ## Features
 
-- Drag-and-drop image upload
-- Automatic image rotation with adjustable timing
-- Image management (edit, delete)
-- Responsive design
-- Touch-enabled navigation
-- Secure file storage
+- Drag-and-drop image upload with preview
+- Automatic image rotation with customizable intervals
+- Image management (edit titles/descriptions, delete)
+- Responsive design for all devices
+- Touch-enabled navigation with swipe gestures
+- Secure file storage with validation
+- Real-time preview updates
 
 ## Prerequisites
 
 - Node.js (v14 or higher)
-- MongoDB
+- MongoDB (v4.4 or higher)
 - npm or yarn
 
 ## Quick Start
@@ -23,33 +24,80 @@ A full-stack application featuring an interactive image carousel with upload cap
 ```bash
 git clone <repository-url>
 cd image-carousel
+
+# Install backend dependencies
 npm install
+
+# Install frontend dependencies
 cd client && npm install
-```
-2. **Configure Environment Variables**
-```bash
-# Create a .ePORT=5000PORT=5000
-PORT=5000
-MONGODB_URI=mongodb://localhost:27017/image-carousel
-UPLOAD_DIR=./uploads
-```
-3. **Run the Application**
-```bash
-# Start the server
-npm run dev
-```
-4. **Database Setup**
-```bash
-- Install MongoDB
-- Start MongoDB service
-- Database will be created automatically
+cd ..
 ```
 
-## API Routes
-- GET /api/images : Fetch all images
-- POST /api/images : Upload new image
-- PATCH /api/images/:id : Update image
-- DELETE /api/images/:id : Delete image
+2. **Configure Environment Variables**
+Create a `.env` file in the root directory:
+```bash
+# Server Configuration
+PORT=5000
+NODE_ENV=development
+
+# Database
+MONGODB_URI=mongodb://localhost:27017/image-carousel
+
+# File Upload
+UPLOAD_DIR=./uploads
+MAX_FILE_SIZE=5242880  # 5MB in bytes
+```
+
+3. **Database Setup**
+```bash
+# Start MongoDB service
+# On macOS with Homebrew:
+brew services start mongodb-community
+
+# On Windows:
+net start MongoDB
+
+# On Linux:
+sudo systemctl start mongod
+```
+
+4. **Run the Application**
+```bash
+# Start the backend server (from root directory)
+npm run dev
+
+# In a new terminal, start the frontend (from client directory)
+cd client
+npm run dev
+```
+
+## API Documentation
+
+### Image Routes
+
+#### GET /api/images
+- Fetches all images
+- Query Parameters:
+  - `limit`: Number of images to return (default: 10)
+  - `page`: Page number for pagination (default: 1)
+  - `sort`: Sort order ('asc' or 'desc' by date)
+
+#### POST /api/images
+- Uploads a new image
+- Content-Type: multipart/form-data
+- Body:
+  - `image`: File (required)
+  - `title`: String (optional)
+  - `description`: String (optional)
+
+#### PATCH /api/images/:id
+- Updates image details
+- Body (JSON):
+  - `title`: String (optional)
+  - `description`: String (optional)
+
+#### DELETE /api/images/:id
+- Deletes an image and its file
 
 ## Usage Guide
 1. Access application at http://localhost:3000

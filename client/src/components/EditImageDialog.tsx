@@ -1,44 +1,49 @@
-import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField } from '@mui/material';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { 
+  Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, 
+  TextField, FormControl, InputLabel, Select, MenuItem 
+} from '@mui/material';
 import { ImageType } from '../types';
 import axiosInstance from '../api/axios';
 
 interface EditImageDialogProps {
   open: boolean;
-  image: ImageType | null;
+  images: ImageType[]; // List of all images
+  image: ImageType | null; // Selected image
   onClose: () => void;
-  onSave?: () => void;  // Made optional using ? syntax
+  onSave: () => void;
 }
 
-const EditImageDialog: React.FC<EditImageDialogProps> = ({ open, image, onClose, onSave }) => {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: ''
-  });
+const EditImageDialog: React.FC<EditImageDialogProps> = ({ open, images, image, onClose, onSave }) => {
+  const [selectedImage, setSelectedImage] = useState<ImageType | null>(image);
+  const [title, setTitle] = useState(image?.title || '');
+  const [description, setDescription] = useState(image?.description || '');
 
   useEffect(() => {
-    if (image) {
-      setFormData({
-        title: image.title,
-        description: image.description
-      });
-    }
+    setSelectedImage(image);
+    setTitle(image?.title || '');
+    setDescription(image?.description || '');
   }, [image]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+  const handleImageChange = (event: any) => {
+    const selectedId = event.target.value;
+    const selectedImg = images.find((img) => img._id === selectedId) || null;
+
+    setSelectedImage(selectedImg);
+    setTitle(selectedImg?.title || '');
+    setDescription(selectedImg?.description || '');
   };
 
   const handleSave = async () => {
-    try {
-      if (!image?._id) return;
+    if (!selectedImage) return;
 
-      await axiosInstance.patch(`/api/images/${image._id}`, formData);
-      onSave?.();  // Optional chaining for cleaner code
+    try {
+      await axiosInstance.patch(`/api/images/${selectedImage._id}`, {
+        title,
+        description,
+      });
+
+      onSave();
       onClose();
     } catch (error) {
       console.error('Error updating image:', error);
@@ -47,39 +52,77 @@ const EditImageDialog: React.FC<EditImageDialogProps> = ({ open, image, onClose,
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Edit Image</DialogTitle>
-      <DialogContent>
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+      <DialogTitle sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+        Edit Image
+      </DialogTitle>
+      <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, padding: 3 }}>
+        
+        {/* Dropdown to Select Image */}
+        <FormControl fullWidth>
+          <InputLabel sx={{ textAlign: 'left', padding: 1.5 }}>Select Image to Edit</InputLabel>
+          <Select 
+            value={selectedImage?._id || ''} 
+            onChange={handleImageChange}
+            displayEmpty
+            sx={{ 
+              textAlign: 'left',
+              fontSize: '1rem', 
+              bgcolor: 'background.paper',
+              '& .MuiSelect-select': {
+                padding: '16.5px 14px'
+              }
+            }}
+          >
+            {images.map((img) => (
+              <MenuItem key={img._id} value={img._id} sx={{ fontSize: '1rem' }}>
+                {img.title}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {/* Image Preview */}
+        {selectedImage && (
+          <Box sx={{ textAlign: 'center', mb: 2 }}>
+            <img
+              src={selectedImage.imageUrl}
+              alt={selectedImage.title}
+              style={{
+                maxWidth: '100%',
+                height: 180,
+                objectFit: 'contain',
+                borderRadius: 8,
+                boxShadow: '0px 4px 10px rgba(0,0,0,0.1)',
+              }}
+            />
+          </Box>
+        )}
+
+        {/* Title & Description Fields */}
         <TextField
-          name="title"
-          autoFocus
-          margin="dense"
-          label="Title"
-          type="text"
           fullWidth
-          value={formData.title}
-          onChange={handleInputChange}
+          label="Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          sx={{ fontSize: '1rem', bgcolor: 'background.paper' }}
         />
         <TextField
-          name="description"
-          margin="dense"
-          label="Description"
-          type="text"
           fullWidth
+          label="Description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
           multiline
-          rows={4}
-          value={formData.description}
-          onChange={handleInputChange}
+          rows={2}
+          sx={{ fontSize: '1rem', bgcolor: 'background.paper' }}
         />
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} color="secondary">Cancel</Button>
-        <Button 
-          onClick={handleSave} 
-          color="primary"
-          disabled={!formData.title.trim()}
-        >
-          Save
+      <DialogActions sx={{ padding: 3 }}>
+        <Button onClick={onClose} color="error" variant="outlined" sx={{ fontSize: '1rem', padding: '8px 16px' }}>
+          Cancel
+        </Button>
+        <Button onClick={handleSave} color="primary" variant="contained" sx={{ fontSize: '1rem', padding: '8px 16px' }}>
+          Save Changes
         </Button>
       </DialogActions>
     </Dialog>
